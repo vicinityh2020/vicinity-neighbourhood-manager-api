@@ -1,4 +1,4 @@
-{
+var data = {
   "swagger": "2.0",
   "info": {
     "description": "Lorem ipsum",
