@@ -1,4 +1,4 @@
-var data = {
+data = {
   "swagger": "2.0",
   "info": {
     "description": "Lorem ipsum",
@@ -6,7 +6,7 @@ var data = {
     "title": "VICINITY TEST",
     "termsOfService": "http://swagger.io/terms/",
     "contact": {
-      "email": "apiteam@swagger.io"
+      "email": "jorge.almela@bavenir.eu"
     },
     "license": {
       "name": "Apache 2.0",
@@ -18,11 +18,39 @@ var data = {
   "tags": [
     {
       "name": "authenticate",
-      "description": "Login",
-      "externalDocs": {
-        "description": "Find out more about our store",
-        "url": "http://swagger.io"
-      }
+      "description": "Login"
+    },
+    {
+      "name": "organisations",
+      "description": "Organisation management"
+    },
+    {
+      "name": "user",
+      "description": "Login"
+    },
+    {
+      "name": "agent",
+      "description": "Agent management"
+    },
+    {
+      "name": "item",
+      "description": "Item management"
+    },
+    {
+      "name": "contracts",
+      "description": "Contract management"
+    },
+    {
+      "name": "friendships",
+      "description": "Friendship management"
+    },
+    {
+      "name": "search",
+      "description": "Entity search"
+    },
+    {
+      "name": "semantic repository",
+      "description": "Semantic validation"
     }
   ],
   "schemes": [
@@ -33,10 +61,10 @@ var data = {
     "/authenticate": {
       "post": {
         "tags": [
-          "user"
+          "authenticate"
         ],
         "summary": "Logs user into the system",
-        "description": "",
+        "description": "Generates the x-access-token needed for the rest of the requests",
         "operationId": "loginUser",
         "produces": [
           "application/json"
@@ -48,7 +76,7 @@ var data = {
             "description": "Login data",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Login"
+              "$ref": "#/definitions/LoginBody"
             }
           }
         ],
@@ -56,7 +84,7 @@ var data = {
           "200": {
             "description": "successful operation",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/LoginResponse"
             },
             "headers": {
               "X-Rate-Limit": {
@@ -72,30 +100,56 @@ var data = {
             }
           },
           "400": {
-            "description": "Invalid username/password supplied"
+            "description": "Invalid/Missing fields"
+          },
+          "401": {
+            "description": "Unauthorized/Wrong password"
+          },
+          "403": {
+            "description": "User duplicated"
+          },
+          "404": {
+            "description": "User not found or deleted"
+          }
+        }
+      }
+    },
+    "/organisation": {
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "summary": "Get logged user organisation information",
+        "description": "",
+        "operationId": "getOrganisation",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "description": "authentication token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/getOrganisationResponse"
+            }
+          },
+          "404": {
+            "description": "Organisation not found"
           }
         }
       }
     }
   },
-  "securityDefinitions": {
-    "petstore_auth": {
-      "type": "oauth2",
-      "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
-      "flow": "implicit",
-      "scopes": {
-        "write:pets": "modify pets in your account",
-        "read:pets": "read your pets"
-      }
-    },
-    "api_key": {
-      "type": "apiKey",
-      "name": "api_key",
-      "in": "header"
-    }
-  },
   "definitions": {
-    "Login": {
+    "LoginBody": {
       "type": "object",
       "properties": {
         "username": {
@@ -105,10 +159,75 @@ var data = {
           "type": "string"
         }
       }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "Token": {
+          "type": "string"
+        },
+        "UID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "CID": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "getOrganisationResponse": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "cid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "accountOf": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/idObject"
+          }
+        },
+        "knows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/idObject"
+          }
+        },
+        "hasNodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/idObject"
+          }
+        }
+      }
+    },
+    "idObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Primary id"
+        },
+        "extid": {
+          "type": "string",
+          "format": "uuid",
+          "description": "External id"
+        }
+      }
     }
   },
   "externalDocs": {
-    "description": "Find out more about Swagger",
-    "url": "http://swagger.io"
+    "description": "Find out more about VICINITY",
+    "url": "https://github.com/vicinityh2020"
   }
 }
