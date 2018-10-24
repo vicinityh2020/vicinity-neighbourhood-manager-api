@@ -1,9 +1,10 @@
-var data = {
+{
   "swagger": "2.0",
   "info": {
-    "description": "VICINITY Neighbourhood Manager API",
-    "version": "1.0.2",
+    "description": "Lorem ipsum",
+    "version": "1.0.1",
     "title": "VICINITY TEST",
+    "termsOfService": "http://swagger.io/terms/",
     "contact": {
       "email": "jorge.almela@bavenir.eu"
     },
