@@ -1,9 +1,9 @@
 var data = {
   "swagger": "2.0",
   "info": {
-    "description": "VICINITY Neighbourhood Manager API",
-    "version": "1.0.2",
-    "title": "VICINITY TEST",
+    "description": " <hr> <h2>VICINITY Neighbourhood Manager API</h2> <h3>General info</h3>  <p>All API responses are wrapped into:</p>  <code>{ error: boolean, message: object/string}</code> <p>Where <b>message</b> is the actual response described below for each endpoint. Only exception are the semantic repository endpoints.</p> <p>In calls with authentication token required, the lack of it will generate error 401 - Not Authorized</p> <hr> <br> ",
+    "version": "1.1.0",
+    "title": "VICINITY NM API",
     "contact": {
       "email": "jorge.almela@bavenir.eu"
     },
@@ -42,6 +42,10 @@ var data = {
     {
       "name": "friendships",
       "description": "Friendship management"
+    },
+    {
+      "name": "semantic repository",
+      "description": "Validate your TD and check the ontology"
     }
   ],
   "schemes": [
@@ -76,18 +80,6 @@ var data = {
             "description": "successful operation",
             "schema": {
               "$ref": "#/definitions/LoginResponse"
-            },
-            "headers": {
-              "X-Rate-Limit": {
-                "type": "integer",
-                "format": "int32",
-                "description": "calls per hour allowed by the user"
-              },
-              "X-Expires-After": {
-                "type": "string",
-                "format": "date-time",
-                "description": "date in UTC when token expires"
-              }
             }
           },
           "400": {
@@ -95,9 +87,6 @@ var data = {
           },
           "401": {
             "description": "Unauthorized/Wrong password"
-          },
-          "403": {
-            "description": "User duplicated"
           },
           "404": {
             "description": "User not found or deleted"
@@ -142,7 +131,7 @@ var data = {
           "organisations"
         ],
         "summary": "Register a new organisation",
-        "description": "DevOps approval required",
+        "description": "DevOps approval required, user registering will have to wait for mail confirmation",
         "operationId": "postOrganisation",
         "produces": [
           "application/json"
@@ -158,8 +147,8 @@ var data = {
           }
         ],
         "responses": {
-          "202": {
-            "description": "request sent to process"
+          "200": {
+            "description": "successful operation"
           },
           "400": {
             "description": "Mail or name already exists"
@@ -191,6 +180,177 @@ var data = {
           },
           "403": {
             "description": "Need to be admin"
+          }
+        }
+      }
+    },
+    "/organisation/all": {
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "summary": "Get all organisations in the platform",
+        "description": "",
+        "operationId": "getOrganisations",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "description": "authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Items skipped at the beggining, allow pagination (i.e: Go to second page - offset=25)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max number of items per page (25 is the upper max)",
+            "type": "number",
+            "default": 25,
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/organisationsArray"
+            }
+          },
+          "400": {
+            "description": "Wrong query parameters format"
+          },
+          "404": {
+            "description": "Organisations not found"
+          }
+        }
+      }
+    },
+    "/organisation/friends": {
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "summary": "Get friends of my organisation",
+        "description": "",
+        "operationId": "getFriends",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "description": "authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Items skipped at the beggining, allow pagination (i.e: Go to second page - offset=25)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max number of items per page (25 is the upper max)",
+            "type": "number",
+            "default": 25,
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/organisationsArray"
+            }
+          },
+          "400": {
+            "description": "Wrong query parameters format"
+          },
+          "404": {
+            "description": "Organisations not found"
+          }
+        }
+      }
+    },
+    "/organisation/{cid}/items": {
+      "get": {
+        "tags": [
+          "organisations"
+        ],
+        "summary": "Get items under a certain organisation",
+        "description": "",
+        "operationId": "getOrganisationItems",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "description": "authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cid",
+            "in": "path",
+            "description": "organisation id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "item type",
+            "type": "string",
+            "enum": [
+              "device",
+              "service"
+            ],
+            "required": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Items skipped at the beggining, allow pagination (i.e: Go to second page - offset=25)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max number of items per page (25 is the upper max)",
+            "type": "number",
+            "default": 25,
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/itemsArray"
+            }
+          },
+          "400": {
+            "description": "Wrong query parameters format"
+          },
+          "404": {
+            "description": "Items not found"
           }
         }
       }
@@ -256,6 +416,9 @@ var data = {
               "$ref": "#/definitions/getUserResponse"
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "User not found"
           }
@@ -282,7 +445,7 @@ var data = {
           }
         ],
         "responses": {
-          "202": {
+          "200": {
             "description": "request sent to process"
           },
           "400": {
@@ -491,7 +654,7 @@ var data = {
         }
       }
     },
-    "/items/{oid}": {
+    "/items": {
       "put": {
         "tags": [
           "items"
@@ -511,13 +674,6 @@ var data = {
             "type": "string"
           },
           {
-            "name": "oid",
-            "in": "path",
-            "description": "object to be updated",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -532,6 +688,9 @@ var data = {
           },
           "400": {
             "description": "Missing or wrong fields"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -662,7 +821,7 @@ var data = {
             }
           },
           "404": {
-            "description": "No friendship requests"
+            "description": "No contract requests"
           }
         }
       },
@@ -692,9 +851,14 @@ var data = {
           },
           "400": {
             "description": "Wrong input"
+          },
+          "403": {
+            "description": "Need IoT Owner role"
           }
         }
-      },
+      }
+    },
+    "/contract/{ctid}": {
       "put": {
         "tags": [
           "contracts"
@@ -714,6 +878,13 @@ var data = {
             "type": "string"
           },
           {
+            "name": "ctid",
+            "in": "path",
+            "description": "contract id",
+            "required": true,
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -727,7 +898,10 @@ var data = {
             "description": "successful operation"
           },
           "400": {
-            "description": "Conflicting with current friendship status"
+            "description": "Wrong input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -810,8 +984,7 @@ var data = {
           "200": {
             "description": "successful operation",
             "schema": {
-              "type": "object",
-              "description": "Flexible"
+              "$ref": "#/definitions/itemsArray"
             }
           },
           "404": {
@@ -851,12 +1024,70 @@ var data = {
           "200": {
             "description": "successful operation",
             "schema": {
-              "type": "object",
-              "description": "Flexible"
+              "$ref": "#/definitions/itemsArray"
             }
           },
           "404": {
             "description": "Nothing found"
+          }
+        }
+      }
+    },
+    "/repository/annotations": {
+      "get": {
+        "tags": [
+          "semantic repository"
+        ],
+        "summary": "Get ontology annotations",
+        "description": "Get all possible property, action, event and thing types",
+        "operationId": "getAnnotations",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/annotations"
+            }
+          }
+        }
+      }
+    },
+    "/repository/validate": {
+      "post": {
+        "tags": [
+          "semantic repository"
+        ],
+        "summary": "Validates thing specifications (TDs)",
+        "description": "Send your TDs and receive back validations errors if any",
+        "operationId": "validateTd",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Registration data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/thingToValidate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/validationResponse"
+            }
+          },
+          "400": {
+            "description": "Missing or wrong fields in the payload",
+            "schema": {
+              "$ref": "#/definitions/validationError"
+            }
           }
         }
       }
@@ -877,7 +1108,7 @@ var data = {
     "LoginResponse": {
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string"
         },
         "uid": {
@@ -1279,6 +1510,162 @@ var data = {
         }
       }
     },
+    "annotations": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "properties": {
+            "device": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "property": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "service": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "thingToValidate": {
+      "type": "object",
+      "properties": {
+        "adapter-id": {
+          "type": "string"
+        },
+        "thing-descriptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Thing description valid format"
+          }
+        }
+      }
+    },
+    "validationResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "properties": {
+            "errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "validationError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "boolean",
+          "default": true
+        },
+        "message": {
+          "type": "object"
+        }
+      }
+    },
+    "itemsArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Mongo id (XXXXXXXX...)"
+          },
+          "oid": {
+            "type": "string",
+            "description": "External id (XXXX-XXXX-...)"
+          },
+          "typeOfItem": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "accessLevel": {
+            "type": "number"
+          },
+          "adid": {
+            "$ref": "#/definitions/idObject"
+          },
+          "uid": {
+            "$ref": "#/definitions/idObject"
+          },
+          "cid": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "extid": {
+                "type": "string"
+              }
+            }
+          },
+          "info": {
+            "type": "object",
+            "description": "Flexible schema"
+          },
+          "interactionPatterns": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "organisationsArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Mongo id (XXXXXXXX...)"
+          },
+          "cid": {
+            "type": "string",
+            "description": "External id (XXXX-XXXX-...)"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "idObject": {
       "type": "object",
       "properties": {
@@ -1293,6 +1680,10 @@ var data = {
           "description": "External id"
         },
         "name": {
+          "type": "string",
+          "description": "Not always present"
+        },
+        "type": {
           "type": "string",
           "description": "Not always present"
         }
