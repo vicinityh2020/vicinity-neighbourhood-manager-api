@@ -368,6 +368,13 @@
         ],
         "parameters": [
           {
+            "name": "x-access-token",
+            "in": "header",
+            "description": "authentication token",
+            "required": true,
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -377,8 +384,11 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "Request sent to process"
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/postAutoOrganisationResponse"
+            }
           },
           "400": {
             "description": "Mail or name already exists"
@@ -1212,6 +1222,23 @@
               "type": "string"
             }
           }
+        }
+      }
+    },
+    "postAutoOrganisationResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "uid": {
+          "type": "string"
+        },
+        "cid": {
+          "type": "string"
         }
       }
     },
