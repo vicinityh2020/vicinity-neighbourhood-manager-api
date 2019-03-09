@@ -12,7 +12,7 @@ var data = {
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "vicinity.bavenir.eu:3000",
+  "host": "commserver.vicinity.ws:3000",
   "basePath": "/api",
   "tags": [
     {
